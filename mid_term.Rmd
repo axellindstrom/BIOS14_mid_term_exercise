@@ -1,0 +1,102 @@
+---
+title: "Mid-term exercise"
+author: "Axel Lindström"
+date: "2022-12-01"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+```{r, echo = F}
+library(knitr)
+butterflies <- read.csv('./Data/butterflies.csv',
+                        header = T,
+                        as.is = 1)
+dat <- butterflies
+dat$MaternalHost = paste0(dat$MaternalHost, "M")
+dat$LarvalHost = paste0(dat$LarvalHost, "L")
+means = tapply(dat$AdultWeight, list(dat$MaternalHost, dat$LarvalHost), mean)
+ses = tapply(dat$AdultWeight,
+             list(dat$MaternalHost, dat$LarvalHost),
+             function(x) sd(x)/sqrt(sum(!is.na(x))))
+
+means_table <- data.frame("Host plant" = c('BarbareaM','BerteroaM'),
+                          'Means' = c('BarbareaL', 'BerteroaL'))
+```
+\newpage
+## Intro
+Female butterflies reared on two different host plants and were allowed to lay their eggs on the same two plant. Accordingly, the larvae developed on the same two different host plants (Barbarea and Berteroa).  
+  
+Here the goal was to examine the effect of maternal and larval host plant on the adult weight.  
+
+## Methods  
+  
+  
+## Results
+In figure 1 the adult weight is plotted as a function of growth rate. Additionally, individuals have been divided into 2 groups based on their larval host plant (red = Barbarea, black = Berteroa) and a regression line have been fitted to the data. From the plot and the regression analysis it becomes clear that there is a positive relation (estimated slope = 615.701 mg/mm) between the adult weight of the butterflies and the growth rate. Furthermore, the distinct grouping of individuals by their larval host plant indicates that the choice of larval host plant has an effect on the adult weight of the butterflies.  
+  
+```{r, echo = F, fig.align='center', fig.cap='Adult weight as a function of growth rate. X-axis: growth rate in mm. Y-axis: adult weight in mg. Black represent individuals grown on Barbarea plants. Red represents individuals grown on Berteroa plants.'}
+m1 <- lm(AdultWeight~GrowthRate, data = butterflies)
+xx <- seq(min(butterflies$GrowthRate), max(butterflies$GrowthRate), length.out = 1000)
+y_hat <- predict(m1, newdata = list(GrowthRate=xx), se.fit = T, type = 'response')
+
+plot(butterflies$GrowthRate, butterflies$AdultWeight,
+     col = as.numeric(butterflies$LarvalHost), 
+     xlab = 'Growth Rate (mm)', 
+     ylab = 'Adult Weight (mg)',
+     las = 1)
+
+lines(xx, y_hat$fit)
+legend("topleft", c("Larval host", "Barbarea", "Berteroa"),
+       bty="n", pch=c(NA,1,1), col = c('red','black'))
+```
+  
+The mean adult weight for butterflies grown on Barbarea and whose mother also grew on Barbarea was 65.4 mg (Table 1). The mean adult weight for butterflies that grew on Berteroa and whose mothers also grew on Berteroa was 50.4 mg (Table 1). Butterflies that grew on Barbarea whose mothers grew on Berteroa had a mean adult weight of 66.7 mg. Butterflies that grew on Berteroa and whose mothers grew on Berteroa as well had a mean adult weight of 50.4 mg.  
+
+```{r, table1, echo=FALSE}
+kable(round(means, 1), caption = 'Mean adult weight dependent on larval and mother host plant.')
+```
+  
+Moreover, the anova showed that there is a statistically significant difference between the two groups of butterflies grown on Barbarea and Berteroa. Butterflies grown on Barbarea were 27.1 % heavier than butterflies grown on Berteroa (mean adult weight = 66.0 and 51.9 mg respectively, *F*~1,283~ = 145.6, *P* = < 0.001, figure 2). However, there was no significant statistical support for maternal host plant having an effect on the adult weight (*P* = 0.7731, figure 2).  
+```{r, echo = F, fig.align = 'center', fig.cap='Mean adult weight depending on maternal and larval host plant.'}
+plot(c(0.97, 1.03), means[,1], ylim=c(45, 75), xlim=c(0.8, 2.2),
+     xlab="Larval host",
+     ylab="Adult Weight (mg)",
+     xaxt="n", las=1, pch=c(21,16), col="white")
+axis(1, 1:2, labels=c("Barbarea", "Berteroa"))
+arrows(c(0.97,1.03), means[,1]-ses[,1], c(0.97,1.03),
+       means[,1]+ses[,1], length=0.05, angle=90, code=3)
+arrows(c(1.97,2.03), means[,2]-ses[,2], c(1.97,2.03),
+       means[,2]+ses[,2], length=0.05, angle=90, code=3)
+segments(0.97, means[1,1], 1.97, means[1,2], lty=2)
+segments(1.03, means[2,1], 2.03, means[2,2])
+points(c(0.97, 1.03), means[,1], pch=c(1,1), col = c('black', 'red'))
+points(c(1.97, 2.03), means[,2], pch=c(1, 1), col = c('black', 'red'))
+legend("topleft", c("Maternal host", "Barbarea", "Berteroa"),
+       bty="n", pch=c(NA,1,1), col = c('red','black'))
+```
+  
+```{r, echo=FALSE, warning=FALSE}
+library(glmmTMB)
+m <- glmmTMB(AdultWeight~GrowthRate + (1|LarvalHost), data = butterflies)
+VarAmongGroups = attr(VarCorr(m)$cond$LarvalHost, "stddev")^2
+VarWithinGroups = attr(VarCorr(m)$cond, "sc")^2
+CV2_Among = VarAmongGroups/mean(butterflies$AdultWeight)^2
+CV2_Within = VarWithinGroups/mean(butterflies$AdultWeight)^2
+CV2_Total = CV2_Among + CV2_Within
+df = data.frame(Mean = mean(butterflies$AdultWeight), SD = sd(butterflies$AdultWeight),
+                Among = VarAmongGroups/(VarAmongGroups+VarWithinGroups)*100,
+                Within = VarWithinGroups/(VarAmongGroups+VarWithinGroups)*100,
+                CV2_Among, CV2_Within, CV2_Total)
+df = apply(df, 2, round, 2)
+kable(t(round(df, 2)))
+```
+
+## Conclussion
+
+
+
+
+
+
