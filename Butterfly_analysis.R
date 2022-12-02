@@ -1,5 +1,7 @@
 #!/usr/bin/env Rscript
 
+library(glmmTMB)
+
 # Remove global variables in the envionment
 rm(list = ls())
 
@@ -99,8 +101,7 @@ y_hat <- predict(m2, newdata = list(GrowthRate=xx), se.fit = T, type = 'response
 lines(xx, y_hat$fit)
 
 
-# 
-library(glmmTMB)
+##### Linear mixed model ####
 m <- glmmTMB(AdultWeight~1 + (1|MotherID), data = butterflies)
 summary(m)
 

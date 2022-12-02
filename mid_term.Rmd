@@ -88,7 +88,7 @@ kable(round(means, 1), caption = 'Mean adult weight dependent on larval and moth
 ```
   
 Moreover, the anova showed that there is a statistically significant difference between the two groups of butterflies grown on Barbarea and Berteroa. Butterflies grown on Barbarea had a 27.1 % larger adult weight than butterflies grown on Berteroa (mean adult weight = 66.0 and 51.9 mg respectively, *F*~1,283~ = 145.6, *P* = < 0.001, figure 2). However, there was no significant statistical support for maternal host plant having an effect on the adult weight (*F*~1,283~ = 0.0833, *P* = 0.7731, figure 2).  
-```{r, echo = F, fig.align = 'center', fig.cap='Mean adult weight depending on maternal and larval host plant. X-axis: larval host plant. Y-axis: adult weight (mg). Red represent individuals whse mother used Berteroa as a host plant and black represent individuals whose mothers used Barbarea as a host plant.'}
+```{r, echo = F, fig.align = 'center' ,fig.cap='Mean adult weight depending on maternal and larval host plant. X-axis: larval host plant. Y-axis: adult weight (mg). Red represent individuals whse mother used Berteroa as a host plant and black represent individuals whose mothers used Barbarea as a host plant.'}
 plot(c(0.97, 1.03), means[,1], ylim=c(45, 75), xlim=c(0.8, 2.2),
      xlab="Larval host",
      ylab="Adult Weight (mg)",
@@ -107,12 +107,6 @@ legend("topleft", c("Maternal host", "Barbarea", "Berteroa"),
 ```
   
   
-    
-      
-        
-          
-            
-            
 ## Conclussion
 The adult weight of the butterflies heavily depend on the larval host plant. However, the host plant of the mother do not affect the final adult weight.  
 
