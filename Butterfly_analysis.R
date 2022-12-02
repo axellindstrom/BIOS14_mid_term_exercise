@@ -77,7 +77,7 @@ legend("topleft", c("Maternal host", "Barbarea", "Berteroa"),
        bty="n", pch=c(NA,1,1), col = c('red', 'black'))
 
 
-##### Random mixed model. Random variable = Larval Host ####
+##### Linear model ####
 # Plot adult weight against growth rate
 plot(butterflies$GrowthRate, butterflies$AdultWeight,
      col = as.numeric(butterflies$LarvalHost),
@@ -101,7 +101,7 @@ y_hat <- predict(m2, newdata = list(GrowthRate=xx), se.fit = T, type = 'response
 lines(xx, y_hat$fit)
 
 
-##### Linear mixed model ####
+##### Random mixed model. Random variable = maternal host ####
 m <- glmmTMB(AdultWeight~1 + (1|MotherID), data = butterflies)
 summary(m)
 
@@ -118,5 +118,5 @@ names(df) <- c('variable', 'Mean','SD', 'Among (%)', 'Within (%)')
 rownames(df) <- NULL
 
 
-
+test <- c(2,3)
 
